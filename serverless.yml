@@ -1,5 +1,5 @@
 service: appsync-demo-backend
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 plugins:
   - serverless-appsync-plugin
@@ -7,6 +7,8 @@ plugins:
 provider:
   name: aws
   runtime: nodejs12.x
+  region: eu-central-1
+  profile: mikkom
 
 package:
   exclude:
@@ -17,14 +19,27 @@ custom:
   appSync:
     - ${file(serverless.appsync-api.yml)}
 
-# you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
-#  Outputs:
-#     NewOutput:
-#       Description: "Description for the output"
-#       Value: "Some output value"
+resources:
+  Resources:
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireUppercase: false
+            RequireSymbols: false
+        UsernameAttributes:
+          - email
+        Schema:
+          - AttributeDataType: String
+            Name: name
+            Required: false
+            Mutable: true
+  Outputs:
+    CognitoUserPoolId:
+      Value: !Ref CognitoUserPool
