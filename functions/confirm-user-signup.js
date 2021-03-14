@@ -19,7 +19,6 @@ module.exports.handler = async (event) => {
       id: event.userName,
       name,
       screenName: `${name.replace(/[^a-zA-Z0-9]/g, '')}${suffix}`,
-      birthdate: AWSDate,
       createdAt: new Date().toJSON(),
       followersCount: 0,
       followingCount: 0,
@@ -30,7 +29,7 @@ module.exports.handler = async (event) => {
     await DocumentClient.put({
       TableName: USERS_TABLE,
       Item: user,
-      ConditionExpression: 'attribute_not_exists(id',
+      ConditionExpression: 'attribute_not_exists(id)',
     }).promise()
 
     return event

@@ -1,8 +1,10 @@
 service: appsync-demo-backend
-frameworkVersion: "2"
+frameworkVersion: '2'
 
 plugins:
   - serverless-appsync-plugin
+  - serverless-iam-roles-per-function
+  - serverless-export-env
 
 provider:
   name: aws
@@ -11,7 +13,7 @@ provider:
   profile: mikkom
   environment:
     STAGE: ${self:custom.stage}
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1'
 
 package:
   exclude:
@@ -19,6 +21,7 @@ package:
     - package.json
 
 custom:
+  region: ${opt:region, self:provider.region}
   stage: ${opt:stage, self:provider.stage}
   appSync:
     - ${file(serverless.appsync-api.yml)}
@@ -93,5 +96,8 @@ resources:
         PreventUserExistenceErrors: ENABLED
 
   Outputs:
+    AwsRegion:
+      Value: ${self:custom.region}
+
     CognitoUserPoolId:
       Value: !Ref CognitoUserPool
